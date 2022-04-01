@@ -63,14 +63,15 @@ def visualize_pred(epoch,windowname,ann_name ,pred_confidence, pred_box, ann_con
     #image4: draw network-predicted "default" boxes on image4 (to show which cell does your network think that contains an object)
 
 
-    ann_confidence = softmax(ann_confidence, axis=1)
+    #ann_confidence = softmax(ann_confidence, axis=1)
 
     pred_confidence = softmax(pred_confidence,axis=1)
 
-
+    #print("gt confidence is " + ann_confidence);raise Exception
     #draw ground truth
     for i in range(len(ann_confidence)):
         for j in range(class_num):
+
             if ann_confidence[i,j]>0.5: #if the network/ground_truth has high confidence on cell[i] with class[j]
                 #TODO:
                 #image1: draw ground truth bounding boxes on image1
@@ -85,7 +86,11 @@ def visualize_pred(epoch,windowname,ann_name ,pred_confidence, pred_box, ann_con
                 start_point_gt,end_point_gt = shape_of_box(ann_box[i],boxs_default[i])
 
                 start_point_default,end_point_default = start_end_point(boxs_default[i][0],boxs_default[i][1],boxs_default[i][2],boxs_default[i][3])
-
+                # print("the gt is ")
+                # print(start_point_gt)
+                # print(end_point_gt)
+                # print(end_point_default)
+                # print(start_point_default)
 
                 cv2.rectangle(image1,start_point_gt,end_point_gt,color=colors[j],thickness=2)
                 # cv2.imshow(windowname + " [[gt_box,gt_dft],[pd_box,pd_dft]]", image1)
@@ -104,7 +109,7 @@ def visualize_pred(epoch,windowname,ann_name ,pred_confidence, pred_box, ann_con
 
     for i in range(len(pred_confidence)):
         for j in range(class_num):
-            if pred_confidence[i,j]>0.5:
+            if pred_confidence[i,j]>0.9:
                 #TODO:
                 #image3: draw network-predicted bounding boxes on image3
                 #image4: draw network-predicted "default" boxes on image4 (to show which cell does your network think that contains an object)
@@ -146,6 +151,7 @@ def visualize_pred(epoch,windowname,ann_name ,pred_confidence, pred_box, ann_con
     results = non_maximum_suppression(confidence_,box_,boxs_default_,0.5,0.5)
 
     if windowname != "val":
+
         ann_name = re.findall(r'\d+',ann_name)[0]
         print(ann_name)
         f = open('data/'+windowname+'/pred_annotations/'+str(ann_name)+'.txt','w')
@@ -199,12 +205,19 @@ def iou(start_point_max,end_point_max,start_point_i,end_point_i):
     # input:
     # boxes -- [num_of_boxes, 8], a list of boxes stored as [box_1,box_2, ...], where box_1 = [x1_center, y1_center, width, height, x1_min, y1_min, x1_max, y1_max].
     # x_min,y_min,x_max,y_max -- another box (box_r)
-
+    # print("max points")
+    # print(start_point_max)
+    # print(end_point_max)
+    # print("point i")
+    # print(start_point_i)
+    # print(end_point_i)
     # output:
     # ious between the "boxes" and the "another box": [iou(box_1,box_r), iou(box_2,box_r), ...], shape = [num_of_boxes]
     inter = (np.minimum(end_point_i[0],end_point_max[0])-np.maximum(start_point_max[0],start_point_i[0])) * \
-            (np.minimum(end_point_i[1],end_point_max[1])-np.maximum(end_point_max[1],end_point_i[1]))
-    #print("area of inter is "+str(inter))
+            (np.minimum(end_point_i[1],end_point_max[1])-np.maximum(start_point_max[1],start_point_i[1]))
+    # print("inter w is "+str(np.minimum(end_point_i[0],end_point_max[0])-np.maximum(start_point_max[0],start_point_i[0])))
+    # print("inter h is "+str(np.minimum(end_point_i[1],end_point_max[1])-np.maximum(start_point_max[1],start_point_i[1])))
+    # print("area of inter is "+str(inter))
 
     if inter<0:
         inter = 0
@@ -264,7 +277,7 @@ def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.3, thresh
                 start_point_max, end_point_max = shape_of_box(box_[max_index], boxs_default[max_index])
                 start_point_i,end_point_i = shape_of_box(box_[j],boxs_default[j])
                 inter = iou(start_point_max,end_point_max,start_point_i,end_point_i)
-                print("inter is "+str(inter))
+                #print("inter is "+str(inter))
                 # print("max start point and end point are ")
                 # print(start_point_max)
                 # print(end_point_max)
@@ -272,10 +285,9 @@ def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.3, thresh
                 # print(start_point_i)
                 # print(end_point_i)
                 if inter>overlap:
-                    print("overlap index is "+ str(j))
-
+                    #print("overlap index is "+ str(j))
                     box_[j] = np.array([0,0,0,0])
-                    boxs_default[j] = []
+                    boxs_default[j] = np.array([0,0,0,0])
                     confidence_[j] = 0
         box_[max_index] = np.array([0,0,0,0])
         confidence_[max_index] = 0

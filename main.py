@@ -31,7 +31,7 @@ args = parser.parse_args()
 
 class_num = 4 #cat dog person background
 
-num_epochs = 4
+num_epochs = 1
 batch_size =5
 
 
@@ -103,8 +103,9 @@ if not args.test:
             avg_count += 1
             pred_confidence_ = pred_confidence[0].detach().cpu().numpy()
             pred_box_ = pred_box[0].detach().cpu().numpy()
-            #visualize_pred(epoch, "train", ' ', pred_confidence_, pred_box_, ann_confidence_[0].numpy(),ann_box_[0].numpy(),images_[0].numpy(), boxs_default)
-            #print('batch %d loss is %f' % (i, loss_net.data))
+            # print("name is "+str(ann_name_))
+            visualize_pred(epoch, "train", ann_name_[0], pred_confidence_, pred_box_, ann_confidence_[0].numpy(),ann_box_[0].numpy(),images_[0].numpy(), boxs_default);raise Exception
+            print('batch %d loss is %f' % (i, loss_net.data))
             # for batch_i in len(images_):
             #     pred_confidence_ = pred_confidence[batch_i].detach().cpu().numpy()
             #     pred_box_ = pred_box[batch_i].detach().cpu().numpy()
