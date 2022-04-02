@@ -152,7 +152,7 @@ def visualize_pred(epoch,windowname,ann_name ,pred_confidence, pred_box, ann_con
 
     if windowname != "val":
         print(ann_name)
-        ann_name = ann_name[17:26]
+        ann_name = ann_name[17:22]
         print(ann_name)
        # print(ann_name)
         f = open('data/'+windowname+'/pred_annotations/'+str(ann_name)+'.txt','w')
