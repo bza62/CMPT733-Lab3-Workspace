@@ -5,16 +5,14 @@ import torch.nn as nn
 import torch.backends.cudnn as cudnn
 import torch.optim as optim
 import torch.utils.data
-import torchvision.datasets as dset
-import torchvision.transforms as transforms
-import torchvision.utils as vutils
+
 from torch.autograd import Variable
 import torch.nn.functional as F
 import numpy as np
 import os
 import cv2
 import torch.utils.data as data
-from PIL import Image
+
 #generate default bounding boxes
 def default_box_generator(layers, large_scale, small_scale):
     # input:
@@ -239,7 +237,7 @@ class COCO(torch.utils.data.Dataset):
             # cv2.setNumThreads(0)
             # cv2.ocl.setUseOpenCL(False)
             image = np.transpose(image, (2, 0, 1))
-            return image, ann_box, ann_confidence
+            return image, ann_box, ann_confidence, image_test
 
         ann_confidence[:, -1] = 1  # the default class for all cells is set to "background"
         # print(os.listdir(self.imgdir))

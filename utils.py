@@ -109,7 +109,7 @@ def visualize_pred(epoch,windowname,ann_name ,pred_confidence, pred_box, ann_con
 
     for i in range(len(pred_confidence)):
         for j in range(class_num):
-            if pred_confidence[i,j]>0.9:
+            if pred_confidence[i,j]>0.6:
                 #TODO:
                 #image3: draw network-predicted bounding boxes on image3
                 #image4: draw network-predicted "default" boxes on image4 (to show which cell does your network think that contains an object)
@@ -151,9 +151,9 @@ def visualize_pred(epoch,windowname,ann_name ,pred_confidence, pred_box, ann_con
     results = non_maximum_suppression(confidence_,box_,boxs_default_,0.5,0.5)
 
     if windowname != "val":
-
-        ann_name = re.findall(r'\d+',ann_name)[0]
         print(ann_name)
+        ann_name = re.findall(r'\d+',ann_name)[0]
+       # print(ann_name)
         f = open('data/'+windowname+'/pred_annotations/'+str(ann_name)+'.txt','w')
 
     for i in results:
@@ -194,7 +194,7 @@ def visualize_pred(epoch,windowname,ann_name ,pred_confidence, pred_box, ann_con
     # cv2.imshow(windowname+" [[gt_box,gt_dft],[pd_box,pd_dft]]",image)
     # cv2.waitKey(0)
     #print("epoch is "+ str(epoch))
-    cv2.imwrite('/home/zbc/Visual Computing/Assignment3-Py-Version/Assignment3-Py-Version/CMPT733-Lab3-Workspace/data/'+windowname+'/'+'result/'+str(epoch)+'.png',image)
+    cv2.imwrite('data/'+windowname+'/'+'result/'+str(epoch)+'.png',image)
     cv2.setNumThreads(0)
     cv2.ocl.setUseOpenCL(False)
     #if you are using a server, you may not be able to display the image.
@@ -233,7 +233,7 @@ def iou(start_point_max,end_point_max,start_point_i,end_point_i):
 
 
 
-def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.3, threshold=0.5):
+def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.1, threshold=0.5):
     #input:
     #confidence_  -- the predicted class labels from SSD, [num_of_boxes, num_of_classes]
     #box_         -- the predicted bounding boxes from SSD, [num_of_boxes, 4]
@@ -247,14 +247,14 @@ def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.3, thresh
     #you can also directly return the final bounding boxes and classes, and write a new visualization function for that.
     size = len(box_)
     results = []
-    print("box in nms")
+
     print(len(box_))
     b = np.array([0,0,0,0])
     # print("confidence is ")
     # print((confidence_))
     confidence_ = np.array(confidence_)
-    print("confidence is ")
-    print(confidence_)
+    # print("confidence is ")
+    # print(confidence_)
     for i in range(0,size):
         # print("before confidence is ")
         # print(confidence_)
@@ -265,15 +265,18 @@ def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.3, thresh
         # print(max_index)
         #max_box = box_[max_index]
         results.append(max_index)
+
         for j in range(0,size):
             #box_[j] = np.array(box_[j])
 
-            if box_[j].any() !=  b.any()  :
+            if  np.any(confidence_[j]!=0) and j!= max_index :
+
                 # print("box_ in nms")
                 # print(box_[max_index])
                 # print(boxs_default[max_index])
                 # print(box_[max_index][0:3])
                 # print(boxs_default[max_index][0:3])
+                #print("box index is "+)
                 start_point_max, end_point_max = shape_of_box(box_[max_index], boxs_default[max_index])
                 start_point_i,end_point_i = shape_of_box(box_[j],boxs_default[j])
                 inter = iou(start_point_max,end_point_max,start_point_i,end_point_i)
@@ -284,19 +287,20 @@ def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.3, thresh
                 # print("i start point and end point are ")
                 # print(start_point_i)
                 # print(end_point_i)
+
                 if inter>overlap:
-                    #print("overlap index is "+ str(j))
+                    #print("delete index is "+ str(j))
                     box_[j] = np.array([0,0,0,0])
                     boxs_default[j] = np.array([0,0,0,0])
                     confidence_[j] = 0
-        box_[max_index] = np.array([0,0,0,0])
-        confidence_[max_index] = 0
+            box_[max_index] = np.array([0,0,0,0])
+            confidence_[max_index] = 0
         # print("confidence is ")
         # print(confidence_)
         # confidence_[max_index] = 0
-    print("result in nms is ")
+    # print("result in nms is ")
     print(len(results))
-        #print(results)
+    #print(results)
     return results
     # box_result = []
     # cat = confidence_[:,0]
