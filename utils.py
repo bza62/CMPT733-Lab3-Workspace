@@ -109,7 +109,7 @@ def visualize_pred(epoch,windowname,ann_name ,pred_confidence, pred_box, ann_con
 
     for i in range(len(pred_confidence)):
         for j in range(class_num):
-            if pred_confidence[i,j]>0.6:
+            if pred_confidence[i,j]>0.8:
                 #TODO:
                 #image3: draw network-predicted bounding boxes on image3
                 #image4: draw network-predicted "default" boxes on image4 (to show which cell does your network think that contains an object)
@@ -265,11 +265,12 @@ def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.1, thresh
         # print(max_index)
         #max_box = box_[max_index]
         results.append(max_index)
-
+        print("max_index before is %d "%(max_index))
         for j in range(0,size):
             #box_[j] = np.array(box_[j])
 
-            if  np.any(confidence_[j]!=0) and j!= max_index :
+            if  confidence_[j]!=0 and j!= max_index :
+                print("compare %d box"%(j))
 
                 # print("box_ in nms")
                 # print(box_[max_index])
@@ -292,8 +293,9 @@ def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.1, thresh
                     box_[j] = np.array([0,0,0,0])
                     boxs_default[j] = np.array([0,0,0,0])
                     confidence_[j] = 0
-            box_[max_index] = np.array([0,0,0,0])
-            confidence_[max_index] = 0
+        box_[max_index] = np.array([0,0,0,0])
+        confidence_[max_index] = 0
+
         # print("confidence is ")
         # print(confidence_)
         # confidence_[max_index] = 0
