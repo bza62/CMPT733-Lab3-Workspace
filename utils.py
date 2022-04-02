@@ -287,9 +287,8 @@ def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.1, thresh
                 # print("i start point and end point are ")
                 # print(start_point_i)
                 # print(end_point_i)
-
                 if inter>overlap:
-                    #print("delete index is "+ str(j))
+                    print("delete index is "+ str(j))
                     box_[j] = np.array([0,0,0,0])
                     boxs_default[j] = np.array([0,0,0,0])
                     confidence_[j] = 0

@@ -34,7 +34,7 @@ args = parser.parse_args()
 class_num = 4 #cat dog person background
 
 num_epochs = 30
-batch_size =5
+batch_size = 10
 
 
 boxs_default = default_box_generator([10,5,3,1], [0.2,0.4,0.6,0.8], [0.1,0.3,0.5,0.7])
@@ -105,6 +105,7 @@ if not args.test:
             avg_count += 1
             pred_confidence_ = pred_confidence[0].detach().cpu().numpy()
             pred_box_ = pred_box[0].detach().cpu().numpy()
+            print("batch %d loss is %d"%(i,avg_loss) )
             # print("name is "+str(ann_name_))
             # for batch_i in len(images_):
             #     pred_confidence_ = pred_confidence[batch_i].detach().cpu().numpy()
@@ -131,33 +132,33 @@ if not args.test:
 #        visualize_pred(epoch, "train",' ', pred_confidence_, pred_box_, ann_confidence_[0].numpy(), ann_box_[0].numpy(),images_[0].numpy(), boxs_default)
         #pred_confidence_all, pred_box_all, ann_confidence_all, ann_box_all, images_all, ann_name_all
         #visualize
-        if epoch == num_epochs-1:
-            total_batch = len(ann_confidence_all)
-            # print("ann_name")
-            # print(len(ann_confidence_all))
-            # print(len(ann_confidence_all[-1]))
-    #        batch_no = len()
-            for i in range(0,total_batch):
-                batch_i = len(ann_confidence_all[i])
-                for j in range(0,batch_i):
-                    #print("ann_name")
-                    #print(ann_name_all[i][j])
-
-                    pred_confidence_batch = pred_confidence_all[i][j].detach().cpu().numpy()
-                    pred_box_batch = pred_box_all[i][j].detach().cpu().numpy()
-
-                    # print("pred_confidence")
-                    # print(pred_confidence_all[i][j].shape)
-                    # print("pred_box")
-                    # print(pred_box_all[i][j])
-                    # print("pred_confidence")
-                    # print(pred_confidence_all[i][j])
-                    # print("pred_box")
-                    #print(pred_box_all[i][j].shape)
-
-                    visualize_pred(i*batch_size+j,"train",ann_name_all[i][j],pred_confidence_batch,pred_box_batch,
-                                   ann_confidence_all[i][j].detach().cpu().numpy(), ann_box_all[i][j].detach().cpu().numpy(),
-                                   images_all[i][j].detach().cpu().numpy(),boxs_default)
+    #     if epoch == num_epochs-1:
+    #         total_batch = len(ann_confidence_all)
+    #         # print("ann_name")
+    #         # print(len(ann_confidence_all))
+    #         # print(len(ann_confidence_all[-1]))
+    # #        batch_no = len()
+    #         for i in range(0,total_batch):
+    #             batch_i = len(ann_confidence_all[i])
+    #             for j in range(0,batch_i):
+    #                 #print("ann_name")
+    #                 #print(ann_name_all[i][j])
+    #
+    #                 pred_confidence_batch = pred_confidence_all[i][j].detach().cpu().numpy()
+    #                 pred_box_batch = pred_box_all[i][j].detach().cpu().numpy()
+    #
+    #                 # print("pred_confidence")
+    #                 # print(pred_confidence_all[i][j].shape)
+    #                 # print("pred_box")
+    #                 # print(pred_box_all[i][j])
+    #                 # print("pred_confidence")
+    #                 # print(pred_confidence_all[i][j])
+    #                 # print("pred_box")
+    #                 #print(pred_box_all[i][j].shape)
+    #
+    #                 visualize_pred(i*batch_size+j,"train",ann_name_all[i][j],pred_confidence_batch,pred_box_batch,
+    #                                ann_confidence_all[i][j].detach().cpu().numpy(), ann_box_all[i][j].detach().cpu().numpy(),
+    #                                images_all[i][j].detach().cpu().numpy(),boxs_default)
         #visualize_pred(epoch,"train", pred_confidence_, pred_box_, ann_confidence_[0].numpy(), ann_box_[0].numpy(), images_[0].numpy(), boxs_default)
         #draw_after_nms(epoch,"train", pred_confidence_, pred_box_,  images_[3].numpy(), boxs_default)
 
@@ -169,31 +170,32 @@ if not args.test:
         # use the training set to train and the validation set to evaluate
         val_avg_loss = 0
         val_avg_count = 0
-        for i, data in enumerate(dataloader_test, 0):
-            images_, ann_box_, ann_confidence_,ann_name_ = data
-            images = images_.cuda()
-            ann_box = ann_box_.cuda()
-            ann_confidence = ann_confidence_.cuda()
-
-            pred_confidence, pred_box = network(images)
-            loss_net = SSD_loss(pred_confidence, pred_box, ann_confidence, ann_box)
-
-            val_avg_loss += loss_net
-            val_avg_count += 1
-            pred_confidence_ = pred_confidence.detach().cpu().numpy()
-            pred_box_ = pred_box.detach().cpu().numpy()
-
-            #optional: implement a function to accumulate precision and recall to compute mAP or F1.
-            #update_precision_recall(pred_confidence_, pred_box_, ann_confidence_.numpy(), ann_box_.numpy(), boxs_default,precision_,recall_,thres)
-
-        #visualize
-        # print("ann_name_all in validation is ")
-        # print(ann_name_all)
-        val_losses.append(val_avg_loss / val_avg_count)
-        pred_confidence_ = pred_confidence[0].detach().cpu().numpy()
-        pred_box_ = pred_box[0].detach().cpu().numpy()
-        visualize_pred(epoch,"val", ' ',pred_confidence_, pred_box_, ann_confidence_[0].numpy(), ann_box_[0].numpy(),
-                       images_[0].numpy(), boxs_default)
+        # for i, data in enumerate(dataloader_test, 0):
+        #     print("in validation")
+        #     images_, ann_box_, ann_confidence_,ann_name_ = data
+        #     images = images_.cuda()
+        #     ann_box = ann_box_.cuda()
+        #     ann_confidence = ann_confidence_.cuda()
+        #
+        #     pred_confidence, pred_box = network(images)
+        #     loss_net = SSD_loss(pred_confidence, pred_box, ann_confidence, ann_box)
+        #
+        #     val_avg_loss += loss_net
+        #     val_avg_count += 1
+        #     pred_confidence_ = pred_confidence.detach().cpu().numpy()
+        #     pred_box_ = pred_box.detach().cpu().numpy()
+        #
+        #     #optional: implement a function to accumulate precision and recall to compute mAP or F1.
+        #     #update_precision_recall(pred_confidence_, pred_box_, ann_confidence_.numpy(), ann_box_.numpy(), boxs_default,precision_,recall_,thres)
+        #
+        # #visualize
+        # # print("ann_name_all in validation is ")
+        # # print(ann_name_all)
+        # val_losses.append(val_avg_loss / val_avg_count)
+        # pred_confidence_ = pred_confidence[0].detach().cpu().numpy()
+        # pred_box_ = pred_box[0].detach().cpu().numpy()
+        # visualize_pred(epoch,"val", ' ',pred_confidence_, pred_box_, ann_confidence_[0].numpy(), ann_box_[0].numpy(),
+        #                images_[0].numpy(), boxs_default)
 
         # for j in range(batch_size):
             #     pred_confidence_ = pred_confidence[j].detach().cpu().numpy()
@@ -207,20 +209,20 @@ if not args.test:
         
         #save weights
 
-    x = np.arange(num_epochs)
-    print(x)
-    fig, ax = plt.subplots()
-    ax.plot(x, train_losses.detach().cpu().numpy(), 'go-', label='train loss')
-    ax.plot(x,val_losses.detach().cpu().numpy(), 'ro-', label='val loss')
-    ax.legend()
-    plt.show()
-    plt.plot()
+    # x = np.arange(num_epochs)
+    # print(x)
+    # fig, ax = plt.subplots()
+    # ax.plot(x, train_losses.detach().cpu().numpy(), 'go-', label='train loss')
+    # ax.plot(x,val_losses.detach().cpu().numpy(), 'ro-', label='val loss')
+    # ax.legend()
+    # plt.show()
+    # plt.plot()
 
 else:
     #TEST
     dataset_test = COCO("data/test/images/", "data/test/annotations/", class_num, boxs_default, train = False, image_size=320)
     dataloader_test = torch.utils.data.DataLoader(dataset_test, batch_size=1, shuffle=False, num_workers=0)
-    network.load_state_dict(torch.load('checkpoint/32_1network.pth'))
+    network.load_state_dict(torch.load('checkpoint/9network.pth'))
     network.eval()
     
     for i, data in enumerate(dataloader_test, 0):

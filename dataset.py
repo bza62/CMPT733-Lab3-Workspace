@@ -140,9 +140,9 @@ def match(ann_box,ann_confidence,boxs_default,threshold,cat_id,x_min,y_min,x_max
             # print(boxs_default[i])
             tx = (float(centre_x)-float(boxs_default[i][0]))/float(boxs_default[i][2])
             ty = (float(centre_y)-float(boxs_default[i][1]))/float(boxs_default[i][3])
-            if boxs_default[i][2]<=0 or boxs_default[i][3]<=0:
-                print("default box is ")
-                print(boxs_default[i]); raise Exception
+            # if boxs_default[i][2]<=0 or boxs_default[i][3]<=0:
+            #     print("default box is ")
+            #     print(boxs_default[i])
             tw = np.log(w/boxs_default[i][2])
             th = np.log(h/boxs_default[i][3])
             ann_box[i] = [tx,ty,tw,th]
@@ -278,7 +278,7 @@ class COCO(torch.utils.data.Dataset):
                     box_height = float(box_height)
                     x_max = x_min + box_width
                     y_max = y_min + box_height
-                    if x_min-crop_x<5 or y_min-crop_y<5 or x_max-crop_x>315 or y_max-crop_y>315:
+                    if x_min-crop_x<1 or y_min-crop_y<1 or x_max-crop_x>319 or y_max-crop_y>319:
                         crop_x, crop_y, image_ = random_crop(image, self.image_size, self.image_size)
 
                     x_min = x_min - crop_x
