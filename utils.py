@@ -152,7 +152,8 @@ def visualize_pred(epoch,windowname,ann_name ,pred_confidence, pred_box, ann_con
 
     if windowname != "val":
         print(ann_name)
-        ann_name = re.findall(r'\d+',ann_name)[0]
+        ann_name = ann_name[17:26]
+        print(ann_name)
        # print(ann_name)
         f = open('data/'+windowname+'/pred_annotations/'+str(ann_name)+'.txt','w')
 
@@ -194,7 +195,7 @@ def visualize_pred(epoch,windowname,ann_name ,pred_confidence, pred_box, ann_con
     # cv2.imshow(windowname+" [[gt_box,gt_dft],[pd_box,pd_dft]]",image)
     # cv2.waitKey(0)
     #print("epoch is "+ str(epoch))
-    cv2.imwrite('data/'+windowname+'/'+'result/'+str(epoch)+'.png',image)
+    cv2.imwrite('data/'+windowname+'/'+'result/'+ann_name+'.jpg',image)
     cv2.setNumThreads(0)
     cv2.ocl.setUseOpenCL(False)
     #if you are using a server, you may not be able to display the image.
@@ -248,7 +249,7 @@ def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.1, thresh
     size = len(box_)
     results = []
 
-    print(len(box_))
+    print(len(confidence_))
     b = np.array([0,0,0,0])
     # print("confidence is ")
     # print((confidence_))
@@ -259,6 +260,7 @@ def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.1, thresh
         # print("before confidence is ")
         # print(confidence_)
         if confidence_.max() == 0:
+
             break
         max_index = np.argmax(confidence_)
         # print("max_index")
@@ -268,31 +270,31 @@ def non_maximum_suppression(confidence_, box_, boxs_default, overlap=0.1, thresh
         print("max_index before is %d "%(max_index))
         for j in range(0,size):
             #box_[j] = np.array(box_[j])
+            if j!= max_index:
+                if  confidence_[j]!=0 :
+                    print("compare %d box"%(j))
 
-            if  confidence_[j]!=0 and j!= max_index :
-                print("compare %d box"%(j))
-
-                # print("box_ in nms")
-                # print(box_[max_index])
-                # print(boxs_default[max_index])
-                # print(box_[max_index][0:3])
-                # print(boxs_default[max_index][0:3])
-                #print("box index is "+)
-                start_point_max, end_point_max = shape_of_box(box_[max_index], boxs_default[max_index])
-                start_point_i,end_point_i = shape_of_box(box_[j],boxs_default[j])
-                inter = iou(start_point_max,end_point_max,start_point_i,end_point_i)
-                #print("inter is "+str(inter))
-                # print("max start point and end point are ")
-                # print(start_point_max)
-                # print(end_point_max)
-                # print("i start point and end point are ")
-                # print(start_point_i)
-                # print(end_point_i)
-                if inter>overlap:
-                    print("delete index is "+ str(j))
-                    box_[j] = np.array([0,0,0,0])
-                    boxs_default[j] = np.array([0,0,0,0])
-                    confidence_[j] = 0
+                    # print("box_ in nms")
+                    # print(box_[max_index])
+                    # print(boxs_default[max_index])
+                    # print(box_[max_index][0:3])
+                    # print(boxs_default[max_index][0:3])
+                    #print("box index is "+)
+                    start_point_max, end_point_max = shape_of_box(box_[max_index], boxs_default[max_index])
+                    start_point_i,end_point_i = shape_of_box(box_[j],boxs_default[j])
+                    inter = iou(start_point_max,end_point_max,start_point_i,end_point_i)
+                    #print("inter is "+str(inter))
+                    # print("max start point and end point are ")
+                    # print(start_point_max)
+                    # print(end_point_max)
+                    # print("i start point and end point are ")
+                    # print(start_point_i)
+                    # print(end_point_i)
+                    if inter>overlap:
+                        print("delete index is "+ str(j))
+                        box_[j] = np.array([0,0,0,0])
+                        boxs_default[j] = np.array([0,0,0,0])
+                        confidence_[j] = 0
         box_[max_index] = np.array([0,0,0,0])
         confidence_[max_index] = 0
 

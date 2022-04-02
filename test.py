@@ -12,7 +12,9 @@ import torchvision.utils as vutils
 from torch.autograd import Variable
 import torch.nn.functional as F
 import glob
-
-a = [3,4,2,5]
-print(np.argmax(a))
-print(a)
+#
+# a = [3,4,2,5]
+# print(np.argmax(a))
+# print(a)
+str = 'data/test/images/00299.jpg'
+print(str[17:26])

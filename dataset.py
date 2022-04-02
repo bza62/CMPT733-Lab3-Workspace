@@ -5,14 +5,16 @@ import torch.nn as nn
 import torch.backends.cudnn as cudnn
 import torch.optim as optim
 import torch.utils.data
-
+import torchvision.datasets as dset
+import torchvision.transforms as transforms
+import torchvision.utils as vutils
 from torch.autograd import Variable
 import torch.nn.functional as F
 import numpy as np
 import os
 import cv2
 import torch.utils.data as data
-
+from PIL import Image
 #generate default bounding boxes
 def default_box_generator(layers, large_scale, small_scale):
     # input:
@@ -140,9 +142,9 @@ def match(ann_box,ann_confidence,boxs_default,threshold,cat_id,x_min,y_min,x_max
             # print(boxs_default[i])
             tx = (float(centre_x)-float(boxs_default[i][0]))/float(boxs_default[i][2])
             ty = (float(centre_y)-float(boxs_default[i][1]))/float(boxs_default[i][3])
-            # if boxs_default[i][2]<=0 or boxs_default[i][3]<=0:
-            #     print("default box is ")
-            #     print(boxs_default[i])
+            if boxs_default[i][2]<=0 or boxs_default[i][3]<=0:
+                print("default box is ")
+                print(boxs_default[i]); raise Exception
             tw = np.log(w/boxs_default[i][2])
             th = np.log(h/boxs_default[i][3])
             ann_box[i] = [tx,ty,tw,th]
@@ -237,7 +239,7 @@ class COCO(torch.utils.data.Dataset):
             # cv2.setNumThreads(0)
             # cv2.ocl.setUseOpenCL(False)
             image = np.transpose(image, (2, 0, 1))
-            return image, ann_box, ann_confidence, image_test
+            return image, ann_box, ann_confidence,img_name
 
         ann_confidence[:, -1] = 1  # the default class for all cells is set to "background"
         # print(os.listdir(self.imgdir))
@@ -278,7 +280,7 @@ class COCO(torch.utils.data.Dataset):
                     box_height = float(box_height)
                     x_max = x_min + box_width
                     y_max = y_min + box_height
-                    if x_min-crop_x<1 or y_min-crop_y<1 or x_max-crop_x>319 or y_max-crop_y>319:
+                    if x_min-crop_x<5 or y_min-crop_y<5 or x_max-crop_x>315 or y_max-crop_y>315:
                         crop_x, crop_y, image_ = random_crop(image, self.image_size, self.image_size)
 
                     x_min = x_min - crop_x
